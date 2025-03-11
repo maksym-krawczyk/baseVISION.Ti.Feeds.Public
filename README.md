@@ -3,7 +3,7 @@ This repository contains resources for our Threat Intel Feeds solution.
 
 ## Addon Pack for Azure
 
-baseVISION provides additional resources which can be deployed to Azure to maximize the usage of out Threat Intel Solution. The Azure Addon back consists of - base
+baseVISION provides additional resources which can be deployed to Azure to maximize the usage of our Threat Intel Solution. The Azure Addon Pack consists of:
 
 * **Dashboard (Microsoft Sentinel Workbook)**\
 This workbook provides insights into Threat Intel feeds integrated into the selected Microsoft Sentinel Workspace regarding quality, speed and efficienty.
