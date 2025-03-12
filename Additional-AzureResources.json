@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "15039247962237533867"
+      "templateHash": "6986660375966265113"
     },
     "support": {
       "tier": "Community",
@@ -379,7 +379,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "16974357353715777902"
+              "templateHash": "1664701695404111303"
             },
             "title": "baseVISION Threat Intel - Defender Integration",
             "description": "This playbook is triggered every 15 minutes and sends Filter based defined IOCs to Microsoft Defender XDR.",
@@ -393,7 +393,7 @@
             "postdeployment": [
               "After the deployment you need to grant the managed identity access to the Microsoft Defender XDR API. Copy the following script which can be executed in the Cloud Shell or in a local PowerShell session: <br><br> <code># Replace with your managed identity object ID<br>$miName = \"la-basevisionti-defenderxdr-uami\"<br># The app ID of the Defender API where the permissions are required<br>$appId = \"fc780465-2017-40d4-a0c5-307022471b92\"<br># Replace with the API permissions required by your app<br>$permissionsToAdd = @(\"Ti.ReadWrite.All\")<br>Connect-AzureAD<br>$miObjectID = (Get-AzADServicePrincipal -DisplayName $miName).Id<br>$app = Get-AzureADServicePrincipal -Filter \"AppId eq '$appId'\"<br>foreach ($permission in $permissionsToAdd)<br>{<br>   $role = $app.AppRoles | where Value -Like $permission | Select-Object -First 1<br>   New-AzureADServiceAppRoleAssignment -Id $role.Id -ObjectId $miObjectID -PrincipalId $miObjectID -ResourceId $app.ObjectId<br>}</code>"
             ],
-            "lastUpdateTime": "2025-02-17T00:00:00.000Z",
+            "lastUpdateTime": "2025-03-12T00:00:00.000Z",
             "entities": [],
             "tags": [],
             "support": {
@@ -545,7 +545,7 @@
                         },
                         "method": "post",
                         "body": {
-                          "query": "let onlyMsTI = ThreatIntelligenceIndicator\n| where Active == true and SourceSystem == \"Microsoft Defender Threat Intelligence\" and FileHashType !contains \"MD5\" and FileHashType !contains \"SHA1\" and TimeGenerated > todatetime(\"@{triggerOutputs()['windowStartTime']}\")\n| project Ioc=strcat(NetworkSourceIP, NetworkIP, NetworkDestinationIP, Url, FileHashValue, DomainName,EmailSenderName), SourceSystem, ConfidenceScore,ExpirationDateTime\n| distinct Ioc;\nThreatIntelligenceIndicator\n| where ConfidenceScore > 99 and Active == true and SourceSystem == \"@{parameters('TaxiiFeedName')}\" and FileHashType !contains \"MD5\" and FileHashType !contains \"SHA1\" and TimeGenerated > ago(7d)\n| project Ioc=strcat(NetworkSourceIP, NetworkIP, NetworkDestinationIP, Url, FileHashValue, DomainName,EmailSenderName), Description, IocType = case(\n    isnotempty(NetworkSourceIP) or isnotempty(NetworkIP) or isnotempty(NetworkDestinationIP), \"IpAddress\",\n    isnotempty(Url), \"Url\",\n    isnotempty(FileHashValue), \"FileSha256\",  // Assuming FileHashValue represents FileSha256\n    isnotempty(DomainName), \"DomainName\",\n    \"\"\n), SourceSystem, ConfidenceScore,ExpirationDateTime,TrafficLightProtocolLevel\n| join kind=leftanti onlyMsTI on Ioc\n| summarize MinConfidenceScore=min(ConfidenceScore),MinExpirationDateTime=min(ExpirationDateTime), Descriptions=make_list(Description) by Ioc, IocType\n| project Ioc, IocType, Description=Descriptions[0], MinConfidenceScore,MinExpirationDateTime\n| limit 20",
+                          "query": "let onlyMsTI = ThreatIntelligenceIndicator\n| where Active == true and SourceSystem == \"Microsoft Defender Threat Intelligence\" and FileHashType !contains \"MD5\" and FileHashType !contains \"SHA1\" and TimeGenerated > todatetime(\"@{triggerOutputs()['windowStartTime']}\")\n| project Ioc=strcat(NetworkSourceIP, NetworkIP, NetworkDestinationIP, Url, FileHashValue, DomainName,EmailSenderName), SourceSystem, ConfidenceScore,ExpirationDateTime\n| distinct Ioc;\nThreatIntelligenceIndicator\n| where ConfidenceScore > 99 and Active == true and SourceSystem == \"@{parameters('TaxiiFeedName')}\" and FileHashType !contains \"MD5\" and FileHashType !contains \"SHA1\" and TimeGenerated > ago(7d)\n| project Ioc=strcat(NetworkSourceIP, NetworkIP, NetworkDestinationIP, Url, FileHashValue, DomainName,EmailSenderName), Description, IocType = case(\n    isnotempty(NetworkSourceIP) or isnotempty(NetworkIP) or isnotempty(NetworkDestinationIP), \"IpAddress\",\n    isnotempty(Url), \"Url\",\n    isnotempty(FileHashValue), \"FileSha256\",  // Assuming FileHashValue represents FileSha256\n    isnotempty(DomainName), \"DomainName\",\n    \"\"\n), SourceSystem, ConfidenceScore,ExpirationDateTime,TrafficLightProtocolLevel\n| join kind=leftanti onlyMsTI on Ioc\n| summarize MinConfidenceScore=min(ConfidenceScore),MinExpirationDateTime=min(ExpirationDateTime), Descriptions=make_list(Description) by Ioc, IocType\n| project Ioc, IocType, Description=iff(Descriptions[0] != \"\",Descriptions[0],\"baseVISION TI\"), MinConfidenceScore,MinExpirationDateTime",
                           "timerangetype": "3"
                         },
                         "path": "/queryDataV2",
@@ -660,35 +660,53 @@
                         ]
                       }
                     },
-                    "Add_Indicator_to_Defender_XDR_Final": {
+                    "Only_Add_indicators_if_array_contains_values": {
                       "runAfter": {
                         "For_each": [
                           "Succeeded"
                         ]
                       },
-                      "type": "Http",
-                      "inputs": {
-                        "uri": "https://api.securitycenter.microsoft.com/api/indicators/import",
-                        "method": "POST",
-                        "headers": {
-                          "Content-Type": "application/json"
-                        },
-                        "body": {
-                          "Indicators": "@variables('Batch')"
-                        },
-                        "authentication": {
-                          "type": "ManagedServiceIdentity",
-                          "identity": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('uamiName'))]",
-                          "audience": "https://api.securitycenter.microsoft.com/"
-                        },
-                        "retryPolicy": {
-                          "type": "none"
+                      "type": "If",
+                      "expression": {
+                        "and": [
+                          {
+                            "greater": [
+                              "@length(variables('Batch'))",
+                              0
+                            ]
+                          }
+                        ]
+                      },
+                      "actions": {
+                        "Add_Indicator_to_Defender_XDR_Final": {
+                          "type": "Http",
+                          "inputs": {
+                            "uri": "https://api.securitycenter.microsoft.com/api/indicators/import",
+                            "method": "POST",
+                            "headers": {
+                              "Content-Type": "application/json"
+                            },
+                            "body": {
+                              "Indicators": "@variables('Batch')"
+                            },
+                            "authentication": {
+                              "type": "ManagedServiceIdentity",
+                              "identity": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('uamiName'))]",
+                              "audience": "https://api.securitycenter.microsoft.com/"
+                            },
+                            "retryPolicy": {
+                              "type": "none"
+                            }
+                          },
+                          "runtimeConfiguration": {
+                            "contentTransfer": {
+                              "transferMode": "Chunked"
+                            }
+                          }
                         }
                       },
-                      "runtimeConfiguration": {
-                        "contentTransfer": {
-                          "transferMode": "Chunked"
-                        }
+                      "else": {
+                        "actions": {}
                       }
                     }
                   },
