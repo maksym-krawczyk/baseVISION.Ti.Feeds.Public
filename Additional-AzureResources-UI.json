@@ -35,12 +35,6 @@
               "Microsoft.ManagedIdentity"
             ]
           },
-          "location": {
-            "metadata": {
-              "hidden": "Hiding location, we get it from the log analytics workspace"
-            },
-            "visible": false
-          },
           "resourceGroup": {
             "allowExisting": true
           }
@@ -241,8 +235,8 @@
         }
       ],
       "outputs": {
-        "workspace-location": "[first(map(filter(basics('getLAWorkspace').value, (filter) => and(contains(toLower(filter.id), toLower(resourceGroup().name)),equals(filter.name,basics('workspace')))), (item) => item.location))]",
-        "location": "[first(map(filter(basics('getLAWorkspace').value, (filter) => and(contains(toLower(filter.id), toLower(resourceGroup().name)),equals(filter.name,basics('workspace')))), (item) => item.location))]",
+        "workspace-location": "[location()]",
+        "location": "[location()]",
         "workspace": "[basics('workspace')]",
         "TaxiiFeedName": "[basics('taxii-name')]",
         "workbookTiDashboard_name": "[steps('workbooks').workbook1.workbook1-name]",
