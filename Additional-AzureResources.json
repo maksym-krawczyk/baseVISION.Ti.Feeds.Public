@@ -48,7 +48,7 @@
     },
     "workbookTiDashboard_name": {
       "type": "string",
-      "defaultValue": "baseVISION TI Feed Dashboard",
+      "defaultValue": "baseVISION SOC TI Feed Dashboard",
       "minLength": 1,
       "metadata": {
         "description": "Name of the workbook which will be created"
