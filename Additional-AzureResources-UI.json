@@ -73,7 +73,7 @@
         "name": "taxii-name",
         "type": "Microsoft.Common.TextBox",
         "label": "Name of the configured TAXII Feed",
-        "defaultValue": "baseVISION-SOC-TI-Feed",
+        "defaultValue": "baseVISION-SOC-TI-Feeds",
         "toolTip": "Name of the Taxii Feed which was configured in the TAXII connector. If multiple feeds/collections from baseVISION are configured only specify the start of the name which should be for all feeds/collections the same.",
         "constraints": {
           "required": true
