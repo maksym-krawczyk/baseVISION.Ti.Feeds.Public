@@ -223,7 +223,7 @@ resource la 'Microsoft.Logic/workflows@2019-05-01' = {
                   {
                     less: [
                       '@length(variables(\'Batch\'))'
-                      495
+                      400
                     ]
                   }
                 ]

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.37.4.10188",
-      "templateHash": "3606105376855087207"
+      "templateHash": "10540619155847679045"
     },
     "title": "baseVISION Threat Intel - Defender Integration",
     "description": "This playbook is triggered every 15 minutes and sends Filter based defined IOCs to Microsoft Defender XDR.",
@@ -259,7 +259,7 @@
                       {
                         "less": [
                           "@length(variables('Batch'))",
-                          495
+                          400
                         ]
                       }
                     ]
