@@ -108,11 +108,11 @@ resource la 'Microsoft.Logic/workflows@2019-05-01' = {
       triggers: {
         Sliding_Window: {
           recurrence: {
-            interval: 15
+            interval: 30
             frequency: 'Minute'
           }
           evaluatedRecurrence: {
-            interval: 15
+            interval: 30
             frequency: 'Minute'
           }
           type: 'SlidingWindow'

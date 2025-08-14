@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.36.177.2456",
-      "templateHash": "15531763845447632946"
+      "version": "0.37.4.10188",
+      "templateHash": "3606105376855087207"
     },
     "title": "baseVISION Threat Intel - Defender Integration",
     "description": "This playbook is triggered every 15 minutes and sends Filter based defined IOCs to Microsoft Defender XDR.",
@@ -144,11 +144,11 @@
           "triggers": {
             "Sliding_Window": {
               "recurrence": {
-                "interval": 15,
+                "interval": 30,
                 "frequency": "Minute"
               },
               "evaluatedRecurrence": {
-                "interval": 15,
+                "interval": 30,
                 "frequency": "Minute"
               },
               "type": "SlidingWindow",
