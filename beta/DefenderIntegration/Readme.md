@@ -24,3 +24,5 @@ foreach ($permission in $permissionsToAdd)
    New-AzureADServiceAppRoleAssignment -Id $role.Id -ObjectId $miObjectID -PrincipalId $miObjectID -ResourceId $app.ObjectId
 }
 ```
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FbaseVISION%2FbaseVISION.Ti.Feeds.Public%2Frefs%2Fheads%2Fmain%2Fbeta%2FDefenderIntegration%2Fla-basevisionti-defenderxdr.json)

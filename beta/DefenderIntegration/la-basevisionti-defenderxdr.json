@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.30.23.60470",
-      "templateHash": "1664701695404111303"
+      "version": "0.36.177.2456",
+      "templateHash": "15531763845447632946"
     },
     "title": "baseVISION Threat Intel - Defender Integration",
     "description": "This playbook is triggered every 15 minutes and sends Filter based defined IOCs to Microsoft Defender XDR.",
@@ -171,7 +171,7 @@
                 },
                 "method": "post",
                 "body": {
-                  "query": "let onlyMsTI = ThreatIntelligenceIndicator\n| where Active == true and SourceSystem == \"Microsoft Defender Threat Intelligence\" and FileHashType !contains \"MD5\" and FileHashType !contains \"SHA1\" and TimeGenerated > todatetime(\"@{triggerOutputs()['windowStartTime']}\")\n| project Ioc=strcat(NetworkSourceIP, NetworkIP, NetworkDestinationIP, Url, FileHashValue, DomainName,EmailSenderName), SourceSystem, ConfidenceScore,ExpirationDateTime\n| distinct Ioc;\nThreatIntelligenceIndicator\n| where ConfidenceScore > 99 and Active == true and SourceSystem == \"@{parameters('TaxiiFeedName')}\" and FileHashType !contains \"MD5\" and FileHashType !contains \"SHA1\" and TimeGenerated > ago(7d)\n| project Ioc=strcat(NetworkSourceIP, NetworkIP, NetworkDestinationIP, Url, FileHashValue, DomainName,EmailSenderName), Description=replace_regex(Description, @'[^a-zA-Z0-9]', ''), IocType = case(\n    isnotempty(NetworkSourceIP) or isnotempty(NetworkIP) or isnotempty(NetworkDestinationIP), \"IpAddress\",\n    isnotempty(Url), \"Url\",\n    isnotempty(FileHashValue), \"FileSha256\",  // Assuming FileHashValue represents FileSha256\n    isnotempty(DomainName), \"DomainName\",\n    \"\"\n), SourceSystem, ConfidenceScore,ExpirationDateTime,TrafficLightProtocolLevel\n| join kind=leftanti onlyMsTI on Ioc\n| summarize MinConfidenceScore=min(ConfidenceScore),MinExpirationDateTime=min(ExpirationDateTime), Descriptions=make_list(Description) by Ioc, IocType\n| project Ioc, IocType, Description=iff(Descriptions[0] != \"\",Descriptions[0],\"baseVISION TI\"), MinConfidenceScore,MinExpirationDateTime",
+                  "query": "let onlyMsTI = ThreatIntelligenceIndicator\n| where Active == true and SourceSystem == \"Microsoft Defender Threat Intelligence\" and FileHashType !contains \"MD5\" and FileHashType !contains \"SHA1\" and TimeGenerated > todatetime(\"@{triggerOutputs()['windowStartTime']}\")\n| project Ioc=strcat(NetworkSourceIP, NetworkIP, NetworkDestinationIP, Url, FileHashValue, DomainName,EmailSenderName), SourceSystem, ConfidenceScore,ExpirationDateTime\n| distinct Ioc;\nThreatIntelligenceIndicator\n| where ConfidenceScore > 99 and Active == true and SourceSystem == \"@{parameters('TaxiiFeedName')}\" and FileHashType !contains \"MD5\" and FileHashType !contains \"SHA1\" and TimeGenerated > ago(7d)\n| project Ioc=strcat(NetworkSourceIP, NetworkIP, NetworkDestinationIP, Url, FileHashValue, DomainName,EmailSenderName), Description, IocType = case(\n    isnotempty(NetworkSourceIP) or isnotempty(NetworkIP) or isnotempty(NetworkDestinationIP), \"IpAddress\",\n    isnotempty(Url), \"Url\",\n    isnotempty(FileHashValue), \"FileSha256\",  // Assuming FileHashValue represents FileSha256\n    isnotempty(DomainName), \"DomainName\",\n    \"\"\n), SourceSystem, ConfidenceScore,ExpirationDateTime,TrafficLightProtocolLevel\n| join kind=leftanti onlyMsTI on Ioc\n| summarize MinConfidenceScore=min(ConfidenceScore),MinExpirationDateTime=min(ExpirationDateTime), Descriptions=make_list(Description) by Ioc, IocType\n| project Ioc, IocType, Description=replace(@\"[^a-zA-Z0-9/]\",\" \",iff(Descriptions[0] != \"\",Descriptions[0],\"baseVISION TI\")), MinConfidenceScore,MinExpirationDateTime",
                   "timerangetype": "3"
                 },
                 "path": "/queryDataV2",
